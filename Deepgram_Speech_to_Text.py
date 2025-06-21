@@ -24,7 +24,8 @@ from deepgram import (
 )
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+#openai.api_key = os.getenv("OPENAI_API_KEY")
 
 chat_history =[]
 #added system prompt:
@@ -207,13 +208,12 @@ async def get_ai_response(prompt):
         chat_history.append({"role": "user", "content": prompt})
         messages = [system_prompt] + chat_history
 
-        response = await openai.ChatCompletion.acreate(
+        response = await client.chat.completions.create(
             model="gpt-3.5-turbo-1106",
             messages=messages
         )
 
-        # Safety check to avoid key errors
-        ai_text = response["choices"][0]["message"]["content"].strip()
+        ai_text = response.choices[0].message.content.strip()
 
         print(f"[OpenAI Response]: {ai_text}")
         chat_history.append({"role": "assistant", "content": ai_text})
@@ -222,12 +222,8 @@ async def get_ai_response(prompt):
 
     except Exception as e:
         print(f"[OpenAI API ERROR] Full Exception: {e}")
-
-        # Optional: log Render's environment variable to ensure key is being read
-        print(f"[DEBUG] OPENAI_API_KEY: {openai.api_key[:10]}...")
-
-        # Optional: directly send the error to the frontend for fast debugging
         return f"Error processing your request: {str(e)}"
+
 
 async def text_to_speech(text):
     try:
