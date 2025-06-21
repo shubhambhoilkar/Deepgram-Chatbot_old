@@ -52,7 +52,7 @@ async def websocket_endpoint(websocket: WebSocket):
         except Exception as e:
             print(f"WebSocket connection closed: {e}")
             break
-@app.get("/{full_path"path}")
+@app.get("/{full_path:path}")
 async def serve_react_app():
     return FileResponse('./dist/index.html')
 
