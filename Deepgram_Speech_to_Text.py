@@ -9,6 +9,8 @@ import uvicorn
 import base64
 import requests
 from fastapi import FastAPI, WebSocket
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from deepgram import (
     DeepgramClient,
