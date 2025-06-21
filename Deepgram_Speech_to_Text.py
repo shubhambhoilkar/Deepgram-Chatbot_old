@@ -212,13 +212,16 @@ async def get_ai_response(prompt):
             messages=messages
         )
 
-        ai_text =response["choices"][0]["message"]["content"]
-        print("get_ai_reposne",ai_text)
+        ai_text =response["choices"][0]["message"]["content"].strip()
+        
+        print(f"[OPENAI RESPONSE]":{ai_text})
         chat_history.append({"role":"assistant","content":ai_text})
         return ai_text
     except Exception as e:
-        print(f"Error from OpenAi: {e}")
-        return "Opps, sorry i couldn't process text."
+        print(f"[OPENAI API ERROR] Full Exception: {e}")
+        
+        print(f"[DEBUG] OPENAI_API_KEY: {openai.api_key[:10]....}")
+        return f"Opps, sorry i couldn't process text.  {str(e)}"
 
 async def text_to_speech(text):
     try:
