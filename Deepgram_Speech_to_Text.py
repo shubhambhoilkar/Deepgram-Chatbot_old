@@ -204,24 +204,30 @@ async def get_transcript(websocket):
 async def get_ai_response(prompt):
     try:
         global chat_history
-        chat_history.append({"role":"user","content":prompt})
+        chat_history.append({"role": "user", "content": prompt})
         messages = [system_prompt] + chat_history
 
         response = await openai.ChatCompletion.acreate(
-            model ="gpt-3.5-turbo-1106",
+            model="gpt-3.5-turbo-1106",
             messages=messages
         )
 
-        ai_text =response["choices"][0]["message"]["content"].strip()
-        
-        print(f"[OPENAI RESPONSE]:{ai_text}")
-        chat_history.append({"role":"assistant","content":ai_text})
+        # Safety check to avoid key errors
+        ai_text = response["choices"][0]["message"]["content"].strip()
+
+        print(f"[OpenAI Response]: {ai_text}")
+        chat_history.append({"role": "assistant", "content": ai_text})
+
         return ai_text
+
     except Exception as e:
-        print(f"[OPENAI API ERROR] Full Exception: {e}")
-        
-        print(f"[DEBUG] OPENAI_API_KEY: {openai.api_key[:10]....}")
-        return f"Opps, sorry i couldn't process text.  {str(e)}"
+        print(f"[OpenAI API ERROR] Full Exception: {e}")
+
+        # Optional: log Render's environment variable to ensure key is being read
+        print(f"[DEBUG] OPENAI_API_KEY: {openai.api_key[:10]}...")
+
+        # Optional: directly send the error to the frontend for fast debugging
+        return f"Error processing your request: {str(e)}"
 
 async def text_to_speech(text):
     try:
