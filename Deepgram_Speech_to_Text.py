@@ -34,7 +34,10 @@ system_prompt = {
 
 #Fast api code 
 app = FastAPI()
+
+app.mount("/assets",StaticFiles(directory="dist/assets"),name="assets")
 app.mount("/", StaticFiles(directory="dist", html= True), name="static")
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
