@@ -11,6 +11,7 @@ import requests
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from deepgram import (
     DeepgramClient,
@@ -35,11 +36,18 @@ system_prompt = {
 #Fast api code 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],    #https://deepgram-chatbot-old.onrender.com/
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
 app.mount("/assets",StaticFiles(directory="dist/assets"),name="assets")
-app.mount("/", StaticFiles(directory="dist", html= True), name="static")
 
 # ✅ Serve index.html directly for the root route
-@app.get("")
+@app.get("/")
 async def read_index():
     return FileResponse('dist/index.html')
     
@@ -63,6 +71,9 @@ async def websocket_endpoint(websocket: WebSocket):
         except Exception as e:
             print(f"WebSocket connection closed: {e}")
             break
+
+# ✅ Serve frontend under / (safe way)
+app.mount("/", StaticFiles(directory="dist", html= True), name="static")
 
 #Core working Chatbot code from Customer response to the Ai response
 class TranscriptCollector:
