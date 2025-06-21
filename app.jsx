@@ -17,7 +17,7 @@ export default function App() {
     //ws.current = new WebSocket(`wss://deepgram-chatbot-old.onrender.com/ws`);
 
     //Recommended for Dynamic (works for both local and production)
-    ws.current = new WebSocket(`${window.location.origin.replace('http','ws')}/ws`);  
+    ws.current = new WebSocket(`wss://${window.location.host}/ws`);  
     ws.current.onopen = () => {
       console.log('WebSocket connected.');
       setIsConnected(true);
