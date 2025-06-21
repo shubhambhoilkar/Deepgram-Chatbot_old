@@ -10,6 +10,7 @@ import base64
 import pygame
 import requests
 from gtts import gTTS
+from openai import AsyncOpenAI
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
