@@ -13,8 +13,11 @@ export default function App() {
   // WebSocket Connection
   useEffect(() => {
     const protocol = window.location.protocol === 'https:' ? 'wss': 'ws'; 
-    ws.current = new WebSocket(`wss://https://deepgram-chatbot-old.onrender.com//ws`);
+    #if want hard coded use with the backend render.com url
+    #ws.current = new WebSocket(`wss://deepgram-chatbot-old.onrender.com/ws`);
 
+    #Recommended for Dynamic (works for both local and production)
+    ws.current = new WebSocket(`${window.location.origin.replace('http','ws')}/ws`);  
     ws.current.onopen = () => {
       console.log('WebSocket connected.');
       setIsConnected(true);
