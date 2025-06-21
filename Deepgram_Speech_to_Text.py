@@ -32,6 +32,7 @@ system_prompt = {
 
 #Fast api code 
 app = FastAPI()
+aap.mount("/", StaticFiles(directory="dist", html= True), name="static")
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -51,6 +52,9 @@ async def websocket_endpoint(websocket: WebSocket):
         except Exception as e:
             print(f"WebSocket connection closed: {e}")
             break
+@app.get("/{full_path"path}")
+async def serve_react_app():
+    return FileResponse('./dist/index.html')
 
 #Core working Chatbot code from Customer response to the Ai response
 class TranscriptCollector:
