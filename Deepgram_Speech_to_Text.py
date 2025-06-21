@@ -38,6 +38,12 @@ app = FastAPI()
 app.mount("/assets",StaticFiles(directory="dist/assets"),name="assets")
 app.mount("/", StaticFiles(directory="dist", html= True), name="static")
 
+# ✅ Serve index.html directly for the root route
+@app.get("")
+async def read_index():
+    return FileResponse('dist/index.html')
+    
+# ✅ WebSocket route (completely outside static files)
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -45,8 +51,8 @@ async def websocket_endpoint(websocket: WebSocket):
         try:
             data = await websocket.receive_text()
             print(f"Received from client: {data}")
+            
             ai_response = await get_ai_response(data)
-
             #Convert AI response to Speech
             audio_base64 = await text_to_speech(ai_response)
 
@@ -57,9 +63,6 @@ async def websocket_endpoint(websocket: WebSocket):
         except Exception as e:
             print(f"WebSocket connection closed: {e}")
             break
-@app.get("/{full_path:path}")
-async def serve_react_app():
-    return FileResponse('./dist/index.html')
 
 #Core working Chatbot code from Customer response to the Ai response
 class TranscriptCollector:
