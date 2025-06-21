@@ -7,8 +7,9 @@ import asyncio
 import openai
 import uvicorn
 import base64
-import traceback
+import pygame
 import requests
+from gtts import gTTS
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -24,8 +25,6 @@ from deepgram import (
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
-ELEVEN_LABS_API_KEY = os.getenv("ELEVEN_LABS_API_KEY")
-ELEVEN_LABS_VOICE_ID = os.getenv("ELEVEN_LABS_VOICE_ID")
 
 chat_history =[]
 #added system prompt:
@@ -45,13 +44,13 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-app.mount("/assets",StaticFiles(directory="dist/assets"),name="assets")
+app.mount("/assets", StaticFiles(directory="dist/assets"),name="assets")
 
 # ✅ Serve index.html directly for the root route
 @app.get("/")
 async def read_index():
     return FileResponse('dist/index.html')
-    
+
 # ✅ WebSocket route (completely outside static files)
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -60,8 +59,8 @@ async def websocket_endpoint(websocket: WebSocket):
         try:
             data = await websocket.receive_text()
             print(f"Received from client: {data}")
-            
             ai_response = await get_ai_response(data)
+
             #Convert AI response to Speech
             audio_base64 = await text_to_speech(ai_response)
 
@@ -219,39 +218,22 @@ async def get_ai_response(prompt):
         return ai_text
     except Exception as e:
         print(f"Error from OpenAi: {e}")
-        traceback.print_exc()
         return "Opps, sorry i couldn't process text."
 
 async def text_to_speech(text):
     try:
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVEN_LABS_VOICE_ID}"
-        headers ={
-            "xi-api-key": ELEVEN_LABS_API_KEY,
-            "Content-Type": "application/json"
-        }
+        tts =gTTS(text)
+        audio_buffer = io.BytesIO()
+        tts.write_to_fb(audio_buffer)
+        audio_buffer.seek(0)
+        audio_base64 = base64.b64encode(audio_buffer.read()).decode('utf-8')
+        return audio_base64
 
-        payload={
-            "text":text,
-            "model_id":"eleven_monolingual_v1",
-            "voice_settings":{
-                "stability":0.5,
-                "similarity_boost":0.5
-            }
-        }
-        response = requests.post(url, json= payload, headers= headers)
-
-        if response.status_code ==200:
-            audio_data = response.content
-            audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-            return audio_base64
-        else: 
-            print(f"Elevenlabs API Error: {response.status_code}, {response.text}")
-            return ""
-    
     except Exception as e:
         print(f"TTS Error: {e}")
         return ""
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("Deepgram_Speech_to_Text:app", host="0.0.0.0", port=port, reload=True)
+    port = int(os.enviorn.get("PORT",8000))
+    uvicorn.run("Deepgram_Speech_to_Text:app", host = "0.0.0.0", port = port, reload = True)
+
