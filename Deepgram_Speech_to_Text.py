@@ -10,7 +10,7 @@ import base64
 import pygame
 import requests
 from gtts import gTTS
-from openai import AsyncClient
+import openai 
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -25,7 +25,7 @@ from deepgram import (
 )
 
 load_dotenv()
-client = AsyncClient(api_key=os.getenv("OPENAI_API_KEY"))
+client = openai.AsyncOpenAI(api_key="YOUR_API_KEY")
 #openai.api_key = os.getenv("OPENAI_API_KEY")
 
 chat_history =[]
