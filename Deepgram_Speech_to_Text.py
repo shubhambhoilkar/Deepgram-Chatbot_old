@@ -7,6 +7,7 @@ import asyncio
 import openai
 import uvicorn
 import base64
+import traceback
 import requests
 from fastapi import FastAPI, WebSocket
 from fastapi.staticfiles import StaticFiles
@@ -218,6 +219,7 @@ async def get_ai_response(prompt):
         return ai_text
     except Exception as e:
         print(f"Error from OpenAi: {e}")
+        traceback.print_exc()
         return "Opps, sorry i couldn't process text."
 
 async def text_to_speech(text):
