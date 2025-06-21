@@ -228,6 +228,5 @@ async def text_to_speech(text):
         return ""
 
 if __name__ == "__main__":
-    #asyncio.run(get_transcript())
-    uvicorn.run("Deepgram_Speech_to_Text:app", host = "0.0.0.0", port = 9900, reload = True)
-
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("Deepgram_Speech_to_Text:app", host="0.0.0.0", port=port, reload=True)
