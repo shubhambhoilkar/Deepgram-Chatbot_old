@@ -214,7 +214,7 @@ async def get_ai_response(prompt):
 
         ai_text =response["choices"][0]["message"]["content"].strip()
         
-        print(f"[OPENAI RESPONSE]":{ai_text})
+        print(f"[OPENAI RESPONSE]:{ai_text}")
         chat_history.append({"role":"assistant","content":ai_text})
         return ai_text
     except Exception as e:
