@@ -25,8 +25,8 @@ from deepgram import (
 )
 
 load_dotenv()
-client = openai.AsyncOpenAI(api_key="YOUR_API_KEY")
-#openai.api_key = os.getenv("OPENAI_API_KEY")
+#client = openai.AsyncOpenAI(api_key="YOUR_API_KEY")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 chat_history =[]
 #added system prompt:
@@ -209,7 +209,7 @@ async def get_ai_response(prompt):
         chat_history.append({"role": "user", "content": prompt})
         messages = [system_prompt] + chat_history
 
-        response = await client.chat.completions.create(
+        response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
             messages=messages
         )
